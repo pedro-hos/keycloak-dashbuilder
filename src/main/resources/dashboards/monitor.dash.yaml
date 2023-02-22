@@ -2,7 +2,7 @@ global:
   mode: dark
 datasets:
   - uuid: sessions
-    url: http://localhost:8081/api?path=sessions
+    url: http://localhost:8081/api?path=client-session-stats
     expression: >-
       $.[ $.[ $.* ] ]
     columns:
@@ -15,7 +15,7 @@ datasets:
       - id: ID
         type: LABEL
   - uuid: events
-    url: http://localhost:8081/api?path=login_events
+    url: http://localhost:8081/api?path=events
     expression: >-
       $.[ $.[$fromMillis($.time), $.type, $.details.username ? $.details.username : "Unknow" ]]
     columns:
@@ -26,7 +26,7 @@ datasets:
       - id: user
         type: LABEL
   - uuid: admin_events
-    url: http://localhost:8081/api?path=admin_events
+    url: http://localhost:8081/api?path=admin-events
     expression: >-
       $.[ $.[$.time, $.operationType, $.resourceType]]
     columns:

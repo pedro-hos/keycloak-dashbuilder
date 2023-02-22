@@ -33,10 +33,10 @@ public class KeycloakAPIProxy {
     @GET
     @Produces("application/json")
     public String request(@QueryParam("path") String path) throws IOException {
-        return getInfo(path);
+        return retrieveRestInfo(path);
     }
 
-    public String getInfo(final String path) {
+    private String retrieveRestInfo(final String path) {
         
         StringBuilder body = new StringBuilder();
         

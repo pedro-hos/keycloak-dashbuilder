@@ -1,0 +1,77 @@
+global:
+    mode: dark
+    settings:
+        refresh:
+            interval: 5
+datasets:
+    - uuid: sessions
+      url: http://localhost:3000/sessions.json
+      expression: >-
+          $.[ $.[ $.* ] ]
+      columns:
+          - id: Offline
+            type: number
+          - id: Client ID
+            type: LABEL
+          - id: Active
+            type: LABEL
+          - id: ID
+            type: LABEL
+pages:
+    - properties:
+          margin: 10px
+      components:
+          - html: >-
+                <strong style="font-size: xx-large">Sessions</strong>
+                <hr />        
+                <strong>Select Client ID</strong>
+          - properties:
+                width: 140px
+            settings:
+                selector:
+                    multiple: true
+                type: selector
+                filter:
+                    enabled: true
+                    notification: true
+                lookup:
+                    uuid: sessions
+                    group:
+                        - columnGroup:
+                              source: Client ID
+                          functions:
+                              - source: Client ID
+          - settings:
+                type: BARCHART
+                filter:
+                    enabled: true
+                    listening: true
+                general:
+                    title: Sessions by Client
+                chart:
+                    resizable: true
+                    height: 400
+                    grid:
+                        x: false
+                lookup:
+                    uuid: sessions
+                    sort:
+                        - column: active
+                          order: descending
+                    group:
+                        - functions:
+                              - source: Client ID
+                              - source: Active
+                              - source: Offline
+          - html: >-
+                <strong style="font-size: x-large">List of sessions</strong>
+                <hr />
+          - settings:
+                component: table
+                external:
+                    width: 100%
+                filter:
+                    enabled: true
+                    listening: true
+                lookup:
+                    uuid: sessions

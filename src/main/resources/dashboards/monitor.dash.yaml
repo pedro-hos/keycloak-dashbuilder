@@ -1,8 +1,17 @@
 global:
   mode: dark
 datasets:
+  - uuid: all_metrics
+    url: /api/metrics
+    columns:
+      - id: Metric
+        type: LABEL
+      - id: Labels
+        type: LABEL
+      - id: Value
+        type: NUMBER
   - uuid: sessions
-    url: http://localhost:8081/api?path=client-session-stats
+    url: /api?path=client-session-stats
     expression: >-
       $.[ $.[ $.* ] ]
     columns:
@@ -15,7 +24,7 @@ datasets:
       - id: ID
         type: LABEL
   - uuid: events
-    url: http://localhost:8081/api?path=events
+    url: /api?path=events
     expression: >-
       $.[ $.[$fromMillis($.time), $.type, $.details.username ? $.details.username : "Unknow" ]]
     columns:
@@ -26,9 +35,9 @@ datasets:
       - id: user
         type: LABEL
   - uuid: admin_events
-    url: http://localhost:8081/api?path=admin-events
+    url: /api?path=admin-events
     expression: >-
-      $.[ $.[$.time, $.operationType, $.resourceType]]
+      $.[ $.[$fromMillis($.time), $.operationType, $.resourceType]]
     columns:
       - id: time
         type: label
@@ -39,15 +48,15 @@ datasets:
 pages:
   - name: index
     components:
-          - type: TABS
-            properties:
-                navGroupId: dashboards
-                targetDivId: dashboards_div
-                margin-top: 10px
-                margin-left: 10px
-          - type: DIV
-            properties:
-                divId: dashboards_div
+      - type: TABS
+        properties:
+          navGroupId: dashboards
+          targetDivId: dashboards_div
+          margin-top: 10px
+          margin-left: 10px
+      - type: DIV
+        properties:
+          divId: dashboards_div
 
   - name: Admin Events
     properties:
@@ -283,13 +292,21 @@ pages:
             listening: true
           lookup:
             uuid: sessions
+  - name: Metrics
+    rows:
+      - columns:
+          - components:
+              - settings:
+                  lookup:
+                    uuid: all_metrics                    
 navTree:
-    root_items:
-        - type: GROUP
-          name: Keycloak Monitoring
-          id: dashboards
-          children:
-              - page: Admin Events
-              - page: Login Events
-              - page: Sessions
-              
+  root_items:
+    - type: GROUP
+      name: Keycloak Monitoring
+
+      id: dashboards
+      children:
+        - page: Admin Events
+        - page: Login Events
+        - page: Sessions
+#        - page: Metrics

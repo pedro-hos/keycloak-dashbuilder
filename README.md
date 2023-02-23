@@ -30,7 +30,7 @@ _You need to use [kcadm.sh](#using-kcadm) instead import the Realm File in case 
 1. First you need to [download](https://www.keycloak.org/downloads) and run Keycloak 20.x as following:
 
 ```
-sh bin/kc.sh start-dev
+sh bin/kc.sh start-dev --metrics-enabled=true
 ```
 
 2. Import the [config/realm-export.json](https://raw.githubusercontent.com/pedro-hos/keycloak-dashbuilder/main/config/realm-export.json) on your running Keycloak environment
@@ -50,7 +50,7 @@ sh bin/kc.sh start-dev
 1. First you need to [download](https://www.keycloak.org/downloads) and run Keycloak 20.x as following:
 
 ```
-sh bin/kc.sh start-dev
+sh bin/kc.sh start-dev --metrics-enabled=true
 ```
 
 2. Login at your realm using `kcadm.sh`. So, go to `bin/` folder and run the following commands:
@@ -163,6 +163,7 @@ or going to **Clients** -> **dashboards** -> **Credentials** tab
 
 ## Other Integrations
 
-You can also, compile and install [
-keycloak-metrics-spi
-](https://github.com/aerogear/keycloak-metrics-spi) and [keycloak-health-checks](https://github.com/thomasdarimont/keycloak-health-checks) as your SPI and use it on  Dashbuilders
+You can also, compile and install [keycloak-health-checks](https://github.com/thomasdarimont/keycloak-health-checks) as your SPI and use it on  Dashbuilders
+
+## How to create other Dashboards?
+

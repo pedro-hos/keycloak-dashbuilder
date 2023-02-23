@@ -12,6 +12,7 @@ So, you can now build your own dashboard using Dashbuilder YAML and analyze your
 2. [Install and Setup Keycloak](#install-and-setup-keycloak)
 3. [Configuring Keycloak-dashbuilder project](#configuring-keycloak-dashbuilder-project)
 4. [Other Integrations](#other-integrations)
+5. [How to create other Dashboards?](#how-to-create-other-dashboards)
 
 ## Tested Versions
 
@@ -123,9 +124,12 @@ _You can change the new user, and password as needed_
 ```
 quarkus.http.port=8081
 quarkus.http.cors=true
-api.keycloak.base-url=[A]
 
-quarkus.oidc.auth-server-url=[B]
+api.keycloak.admin-url=[A]
+api.keycloak.metrics-url=[B]
+api.keycloak.health-url=[C]
+
+quarkus.oidc.auth-server-url=[D]
 quarkus.oidc.client-id=dashboards
 quarkus.oidc.application-type=web-app
 quarkus.http.auth.permission.authenticated.paths=/*
@@ -134,11 +138,13 @@ quarkus.http.auth.permission.authenticated.policy=authenticated
 quarkus.http.auth.permission.public.paths=/q/dev
 quarkus.http.auth.permission.public.policy=permit
 
-quarkus.oidc.credentials.secret=[C]
+quarkus.oidc.credentials.secret=[E]
 ```
 - [A] Your REST API base URL. For example: `http://localhost:8080/admin/realms/dashbuilder/`
-- [B] Your Keycloak REALM URL. For exaple `http://localhost:8080/realms/dashbuilder`
-- [C] Secrect that you have copied before. For example `oAQad2nZJRZNDHxC1j59LGpQrlYRBodn`
+- [B] Keycloak metrics URL, using `--metrics-enabled=true`should be present at `/metrics`. For example: `http://localhost:8080/metrics`
+- [C] Keycloak health URL, using [keycloak-health-checks](https://github.com/thomasdarimont/keycloak-health-checks) as your SPI should be present at `/health/check`. For example: `http://localhost:8080/realms/dashbuilder/health/check`
+- [D] Your Keycloak REALM URL. For exaple `http://localhost:8080/realms/dashbuilder`
+- [E] Secrect that you have copied before. For example `oAQad2nZJRZNDHxC1j59LGpQrlYRBodn`
 
 You can retrieve the secret by `kcadm.sh` as following, where `$CID` is the created client id:
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
@@ -22,12 +23,15 @@ import jakarta.ws.rs.WebApplicationException;
 public class KeycloakAPIProxy {
 
     private static final Logger LOG = Logger.getLogger(KeycloakAPIProxy.class);
+    
+    @ConfigProperty(name = "api.keycloak.admin-url")
+    private String keycloakAdminUrl;
 
-    @ConfigProperty(name = "api.keycloak.base-url")
-    private String keycloakBaseUrl;
-
-    @ConfigProperty(name = "quarkus.oidc.auth-server-url")
-    private String spiBaseUrl;
+    @ConfigProperty(name = "api.keycloak.metrics-url")
+    private String metricsUrl;
+    
+    @ConfigProperty(name = "api.keycloak.health-url")
+    private String healthUrl;
 
     @Inject
     AccessTokenCredential accessTokenCredential;
@@ -35,7 +39,7 @@ public class KeycloakAPIProxy {
     @GET
     @Produces("application/json")
     public String api(@QueryParam("path") String path) throws IOException {
-        var baseUrl = keycloakBaseUrl.endsWith("/") ? keycloakBaseUrl : keycloakBaseUrl + "/";
+        var baseUrl = keycloakAdminUrl.endsWith("/") ? keycloakAdminUrl : keycloakAdminUrl + "/";
         return getInfo(baseUrl, path, true);
     }
 
@@ -43,22 +47,25 @@ public class KeycloakAPIProxy {
     @Path("health")
     @Produces("application/json")
     public String health() throws IOException {
-        var baseUrl = spiBaseUrl.endsWith("/") ? spiBaseUrl : spiBaseUrl + "/";
-        return getInfo(baseUrl, "health/check", false);
+        return getInfo(healthUrl, false);
     }
 
     @GET
     @Path("metrics")
     @Produces("text/plain")
     public String metrics() throws IOException {
-        var baseUrl = spiBaseUrl.endsWith("/") ? spiBaseUrl : spiBaseUrl + "/";
-        return getInfo(baseUrl, "metrics", false);
+        return getInfo(metricsUrl, true);
+    }
+    
+    private String getInfo(String basePath, boolean auth) {
+        return getInfo(basePath, null, auth);
     }
 
     private String getInfo(String basePath, final String path, boolean auth) {
 
         try {
-            var url = new URL(basePath + path);
+            
+            var url = Objects.isNull(path) ?  new URL(basePath) : new URL(basePath + path);
             var conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             if (auth) {

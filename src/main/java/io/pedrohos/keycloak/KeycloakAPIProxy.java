@@ -54,7 +54,7 @@ public class KeycloakAPIProxy {
     @Path("metrics")
     @Produces("text/plain")
     public String metrics() throws IOException {
-        return getInfo(metricsUrl, true);
+        return getInfo(metricsUrl, false);
     }
     
     private String getInfo(String basePath, boolean auth) {
@@ -67,7 +67,10 @@ public class KeycloakAPIProxy {
             
             var url = Objects.isNull(path) ?  new URL(basePath) : new URL(basePath + path);
             var conn = (HttpURLConnection) url.openConnection();
+            
+            conn.setRequestProperty("Accept", "*/*");
             conn.setRequestMethod("GET");
+            
             if (auth) {
                 conn.setRequestProperty("Authorization", "Bearer " + accessTokenCredential.getToken());
             }

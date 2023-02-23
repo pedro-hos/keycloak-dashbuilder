@@ -9,7 +9,6 @@ So, you can now build your own dashboard using Dashbuilder YAML and analyze your
 ## Install and Setup
 ### Configuring Keycloak
 
-<<<<<<< HEAD
 #### By importing REALM File
 
 1. First you have to [download](https://www.keycloak.org/downloads) and run Keycloak
@@ -22,10 +21,6 @@ sh bin/kc.sh start-dev
 
 ![Keycloak Create Realm](/img/create_realm.png "Keycloak Create Realm")
 
-=======
-1. First you have to install and run Keycloak
-2. Import the [config/realm-export.json](https://raw.githubusercontent.com/pedro-hos/keycloak-dashbuilder/main/config/realm-export.json) on your running Keycloak environment
->>>>>>> 962c7f3d37af634ea1e64eff85bf5fb18ac3f2ac
 3. Create a new User at Keycloak Dashbuilder Realm and add **Client Role** `realm-management`and assing `realm-admin` role to user
 
 ![Keycloak User Config](/img/user_config.png "Keycloak User Config")

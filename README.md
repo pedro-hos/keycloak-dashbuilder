@@ -1,6 +1,7 @@
 # keycloak-dashbuilder
+[![License](https://img.shields.io/github/license/kiegroup/kie-tools.svg)](https://github.com/pedro-hos/keycloak-dashbuilder/blob/main/LICENSE)
 
-This is a Quarkus project that connects to Keycloak REST API as a proxy and build Dashboards using the [Dashbuilder](https://www.dashbuilder.org/) project. You can see an example bellow:
+This is a Quarkus project that connects to Keycloak REST API as a proxy and build Dashboards using the [Dashbuilder](https://www.dashbuilder.org/) project.
 
 ![Keycloak-Dashbuilder Home](/img/home.png "Keycloak-Dashbuilder Home")
 

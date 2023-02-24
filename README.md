@@ -13,6 +13,7 @@ So, you can now build your own dashboard using Dashbuilder YAML and analyze your
 3. [Configuring Keycloak-dashbuilder project](#configuring-keycloak-dashbuilder-project)
 4. [Other Integrations](#other-integrations)
 5. [How to create other Dashboards?](#how-to-create-other-dashboards)
+6. [Requirements](#requirements)
 
 ## Tested Versions
 
@@ -41,6 +42,11 @@ sh bin/kc.sh start-dev --metrics-enabled=true
 3. Create a new User at Keycloak Dashbuilder Realm. On this new user go to **Role Mapping** tab and find by `realm-admin` role and assing it to the new user created. This new user should use this role in order to have admin permissions.
 
 ![Keycloak User Config](/img/user_config.png "Keycloak User Config")
+
+- When you click in Assign Role, it is possible that `realm-admin` role will not be shown by default, so you have to select **Filter by clients** and then use the search box:
+
+![Keycloak User Config](/img/assign_role.png "Assign realm-admin role Keycloak User Config")
+
 
 4. Go to **Clients** and click on **dashboard** client, then go to **Credentials** and copy the **Secret** value and save.
 
@@ -173,3 +179,6 @@ You can also, compile and install [keycloak-health-checks](https://github.com/th
 
 ## How to create other Dashboards?
 
+## Requirements
+- Java JDK 17
+- Maven 3.8.5 or above

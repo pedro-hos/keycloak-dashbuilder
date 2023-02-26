@@ -337,7 +337,7 @@ pages:
               - settings:
                   component: table
                   external:
-                    width: 100%
+                    height: 800px
                   filter:
                     enabled: true
                     listening: true

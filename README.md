@@ -8,22 +8,28 @@ This is a Quarkus project that connects to Keycloak REST API as a proxy and buil
 So, you can now build your own dashboard using Dashbuilder YAML and analyze your data properly.
 
 # Table of Contents
-1. [Tested Versions](#tested-versions)
-2. [Install and Setup Keycloak](#install-and-setup-keycloak)
-3. [Configuring Keycloak-dashbuilder project](#configuring-keycloak-dashbuilder-project)
-4. [Other Integrations](#other-integrations)
-5. [How to create other Dashboards?](#how-to-create-other-dashboards)
-6. [Requirements](#requirements)
+
+1. [Requirements](#requirements)
+2. [Tested Versions](#tested-versions)
+3. [Install and Setup Keycloak](#install-and-setup-keycloak)
+4. [Configuring Keycloak-dashbuilder project](#configuring-keycloak-dashbuilder-project)
+5. [Other Integrations](#other-integrations)
+6. [How to create other Dashboards?](#how-to-create-other-dashboards)
+
+## Requirements
+- Java JDK 17
+- Maven 3.8.5 or above
 
 ## Tested Versions
 
 | Keycloak Version 	| RH-SSO Version 	| Quarkus Dashbuilder Version 	|
 |------------------	|----------------	|-----------------------------	|
+| 21.0.0           	| -              	| 0.26.1                      	|
 | 20.0.5           	| -              	| 0.26.1                      	|
 | 20.0.5           	| -              	| 0.26.1                      	|
 | -                	| 7.6.1          	| 0.26.1                      	|
 
-_You need to use [kcadm.sh](#using-kcadm) instead import the Realm File in case of running RH-SSO 7.6._
+_Note: You need to use [kcadm.sh](#using-kcadm) instead import the Realm File in case of running RH-SSO 7.6._
 
 ## Install and Setup Keycloak
 
@@ -77,7 +83,7 @@ sh bin/kc.sh start-dev --metrics-enabled=true
 ```
 ./kcadm.sh update events/config -r dashbuilder -s "eventsEnabled=true" -s "adminEventsEnabled=true"
 ```
-_if you are using metrics, you'd to add the metrics-listener on Events Listeners_
+_Note: If you are using [Keycloak Metrics SPI](https://github.com/aerogear/keycloak-metrics-spi), you'd to add the metrics-listener on Events Listeners. If you're using [Keycloak Native Metrics](https://www.keycloak.org/server/all-config?q=metric) you don't_
 
 ```
 ./kcadm.sh update events/config -r dashbuilder -s "eventsEnabled=true" -s "adminEventsEnabled=true" -s "eventsListeners+=metrics-listener"
@@ -90,7 +96,7 @@ _if you are using metrics, you'd to add the metrics-listener on Events Listeners
 Created new client with id '6c922c7c-6b2d-44ff-909f-33279b5ff257'
 ```
 
-_Copy the client id to use on the next step_
+_Note: Copy the client id to use on the next steps_
 
 6. Creating the client secret with the `client id` created on step 5.
 
@@ -179,6 +185,4 @@ You can also, compile and install [keycloak-health-checks](https://github.com/th
 
 ## How to create other Dashboards?
 
-## Requirements
-- Java JDK 17
-- Maven 3.8.5 or above
+You need to edit the `src/main/resources/dashboards/monitor.dash.yaml` in order to add more dashboards. Learn how to create dashboards by following [Dashbuilder YAML guide](https://www.dashbuilder.org/docs/#chap-dashbuilder-yaml-guides).

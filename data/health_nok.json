@@ -1,0 +1,92 @@
+{
+    "details":{
+       "filesystem":{
+          "state":"UP"
+       },
+       "database":{
+          "message":"javax.resource.ResourceException: IJ000453: Unable to get managed connection for java:jboss/datasources/KeycloakDS",
+          "state":"DOWN"
+       },
+       "infinispan": {
+          "numberOfNodes": 1,
+          "state": "UP",
+          "healthStatus": "HEALTHY",
+          "nodeNames": [],
+          "cacheDetails": [
+          {
+            "cacheName": "realms",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "authenticationSessions",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "sessions",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "authorizationRevisions",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "clientSessions",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "work",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "keys",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "users",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "loginFailures",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "offlineClientSessions",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "authorization",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "realmRevisions",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "offlineSessions",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "actionTokens",
+            "healthStatus": "HEALTHY"
+          },
+          {
+            "cacheName": "userRevisions",
+            "healthStatus": "HEALTHY"
+          }],
+          "clusterName": "ISPN"
+         }
+    },
+    "ldap": {
+      "ldapStatus": {
+        "ldap1": {
+          "providerName": "ldap1",
+          "status": "ERROR",
+          "errorMessage": "LDAP Query failed",
+          "hint": "Connection refused (Connection refused): localhost:13891"
+        }
+      },
+      "state": "DOWN"
+    },
+    "name":"keycloak",
+    "state":"DOWN"
+ }

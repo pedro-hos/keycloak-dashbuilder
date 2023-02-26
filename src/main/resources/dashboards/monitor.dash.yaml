@@ -45,6 +45,32 @@ datasets:
         type: LABEL
       - id: Resource Type
         type: LABEL
+  - uuid: health
+    url: /api/health
+    expression: >-
+     $.[$.name, $.state, $.details.[$.database.[$.state, $.message ? $.message : "Unknow"],$.filesystem.[$.state, $.message ? $.message : "Unknow"],$.infinispan.[$.state, $.message ? $.message : "Unknow"]]]
+    columns:
+      - id: Name
+        type: LABEL
+      - id: State
+        type: LABEL
+      - id: Database State
+        type: LABEL
+      - id: Database Error
+        type: LABEL
+      - id: Filesystem State
+        type: LABEL
+      - id: Filesystem Error
+        type: LABEL
+      - id: Infinispan State
+        type: LABEL
+      - id: Infinispan Error
+        type: LABEL
+      #- id: LDAP State
+      # type: LABEL
+      #- id: LDAP Error
+      #  type: LABEL
+      #, $.ldap.[ $.state,  $.ldapStatus.[ $.[ $.*.providerName, $.*.status, $.*.errorMessage, $.*.hint]]]
 pages:
   - name: index
     components:
@@ -298,7 +324,25 @@ pages:
           - components:
               - settings:
                   lookup:
-                    uuid: all_metrics                    
+                    uuid: all_metrics
+  - name: Health
+    properties:
+      margin: 10px
+    rows:
+      - columns:
+          - components:
+              - html: >-
+                  <strong style="font-size: xx-large">Health</strong>
+                  <hr />
+              - settings:
+                  component: table
+                  external:
+                    width: 100%
+                  filter:
+                    enabled: true
+                    listening: true
+                  lookup:
+                    uuid: health              
 navTree:
   root_items:
     - type: GROUP
@@ -309,4 +353,5 @@ navTree:
         - page: Admin Events
         - page: Login Events
         - page: Sessions
+        - page: Health
 #        - page: Metrics

@@ -31,6 +31,14 @@
 	</dependencyManagement>
 	<dependencies>
 		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-rest-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-rest-client-jackson</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.quarkiverse.dashbuilder</groupId>
 			<artifactId>quarkus-dashbuilder</artifactId>
 			<version>0.26.1</version>

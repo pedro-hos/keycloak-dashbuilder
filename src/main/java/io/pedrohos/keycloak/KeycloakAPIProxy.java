@@ -2,8 +2,6 @@ package io.pedrohos.keycloak;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -16,6 +14,10 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 @Path("/api")
 public class KeycloakAPIProxy {
@@ -38,54 +40,40 @@ public class KeycloakAPIProxy {
     @Produces("application/json")
     public String api(@QueryParam("path") String path) throws IOException {
         var baseUrl = keycloakAdminUrl.endsWith("/") ? keycloakAdminUrl : keycloakAdminUrl + "/";
-        return getInfo(baseUrl, path, true);
+        return getApiInformation(baseUrl, path, true, false);
     }
 
     @GET
     @Path("health")
     @Produces("application/json")
     public String health() throws IOException {
-        return getInfo(healthUrl, false);
+        return getApiInformation(healthUrl, null, false, true);
     }
 
     @GET
     @Path("metrics")
     @Produces("text/plain")
     public String metrics() throws IOException {
-        return getInfo(metricsUrl, false);
+        return getApiInformation(metricsUrl, null, false, true);
     }
     
-    private String getInfo(String basePath, boolean auth) {
-        return getInfo(basePath, null, auth);
-    }
-
-    private String getInfo(String basePath, final String path, boolean auth) {
-
-        try {
+    private String getApiInformation(final String basePath, final String path, final boolean auth, final boolean acepptHttpStatusError) {
+        
+        try (Client client = ClientBuilder.newClient()) {
+            var url = Objects.isNull(path) ? basePath : basePath + path;
+            final WebTarget target = client.target(url);
             
-            var url = Objects.isNull(path) ?  new URL(basePath) : new URL(basePath + path);
-            var conn = (HttpURLConnection) url.openConnection();
+            var token = "Bearer " + accessTokenCredential.getToken();
+            Response response = auth ? target.request().header("Authorization", token).get() : target.request().get();
             
-            conn.setRequestProperty("Accept", "*/*");
-            conn.setRequestMethod("GET");
-            
-            if (auth) {
-                conn.setRequestProperty("Authorization", "Bearer " + accessTokenCredential.getToken());
+            if(!acepptHttpStatusError && response.getStatus() != HttpURLConnection.HTTP_OK) {
+                LOG.error("Failed : HTTP error code : " + response.getStatus());
+                throw new WebApplicationException("Error calling" + url + " - " + response.getStatus() + " HTTP Status");
             }
-            if (conn.getResponseCode() != 200) {
-                LOG.error("Failed : HTTP error code : " + conn.getResponseCode());
-                throw new WebApplicationException("Error calling Keycloak: " + conn.getResponseCode());
-            }
-
-            var result = new String(conn.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-            conn.disconnect();
-            return result;
-
-        } catch (IOException e) {
-            LOG.error("Failed during retrieve REST API: ", e);
-            throw new WebApplicationException("Failed during retrieve REST API", e);
+            
+            return response.readEntity(String.class);
         }
-
+        
     }
 
 }

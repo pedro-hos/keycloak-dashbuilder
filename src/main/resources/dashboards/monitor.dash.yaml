@@ -48,7 +48,7 @@ datasets:
   - uuid: health
     url: /api/health
     expression: >-
-     $.[$.name, $.state, $.details.[$.database.[$.state, $.message ? $.message : "Unknow"],$.filesystem.[$.state, $.message ? $.message : "Unknow"],$.infinispan.[$.state, $.message ? $.message : "Unknow"]]]
+     $.[$.name, $.state, $.details.[$.database.[$.state, $.message ? $.message : "-"], $.filesystem.[$.state, $.message ? $.message : "-"], $.infinispan.[$.state, $.message ? $.message : "-"], $.ldap ? $.ldap.[$.state, $.ldapStatus.[ $.[ $.*.[$.providerName ? $.providerName : "-", $.status, $.errorMessage, $.hint]]]] : "-"]]
     columns:
       - id: Name
         type: LABEL
@@ -66,9 +66,9 @@ datasets:
         type: LABEL
       - id: Infinispan Error
         type: LABEL
-      #- id: LDAP State
-      # type: LABEL
-      #- id: LDAP Error
+      - id: LDAP State
+        type: LABEL
+      #- id: LDAP Name
       #  type: LABEL
       #, $.ldap.[ $.state,  $.ldapStatus.[ $.[ $.*.providerName, $.*.status, $.*.errorMessage, $.*.hint]]]
 pages:
@@ -338,6 +338,7 @@ pages:
                   component: table
                   external:
                     height: 800px
+                    width: 500px
                   filter:
                     enabled: true
                     listening: true

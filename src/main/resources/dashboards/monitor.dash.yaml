@@ -1,54 +1,49 @@
 global:
   mode: dark
+  settings:
+    extraConfiguration: >-
+      {
+         
+          "series": [{
+              "type": "bar",
+              "itemStyle": {
+                  "normal": {
+                      "label": {
+                          "show": true,
+                          "position": "top",
+                          "fontSize": 15,
+                          "fontWeight": "bold"
+                      }
+                  }
+              }
+          }]
+      }
+    refresh:
+      interval: 4
+    html:
+      html: >-
+        <div id="${this}" class="card-pf card-pf-aggregate-status" style="background-color: ${bgColor}; width: 90%; height: 80px;margin: 10px; border-radius: 10px">
+          <h2 style="font-weight: 600; font-size: large" id="${this}Value">${value} <span id="${this}Suffix" class=""></span></h2>
+          <p style="font-weight: 400" id="${this}Title"><em id="${this}Icon" class=""></em> ${title}</p>
+        </div>
+    chart:
+      resizable: true
+      grid:
+        x: false
 datasets:
-  - uuid: all_metrics
+  - uuid: metrics
     url: /api/metrics
     columns:
-      - id: Metric
-        type: LABEL
-      - id: Labels
-        type: LABEL
-      - id: Value
-        type: NUMBER
-  - uuid: sessions
-    url: /api?path=client-session-stats
-    expression: >-
-      $.[ $.[ $.* ] ]
-    columns:
-      - id: Offline
-        type: number
-      - id: Client ID
-        type: LABEL
-      - id: Active
-        type: LABEL
-      - id: ID
-        type: LABEL
-  - uuid: events
-    url: /api?path=events
-    expression: >-
-      $.[ $.[$fromMillis($.time), $.type, $.details.username ? $.details.username : "Unknow" ]]
-    columns:
-      - id: time
-        type: DATE
-      - id: type
-        type: LABEL
-      - id: user
-        type: LABEL
-  - uuid: admin_events
-    url: /api?path=admin-events
-    expression: >-
-      $.[ $.[$fromMillis($.time), $.operationType, $.resourceType]]
-    columns:
-      - id: time
+      - id: metric
         type: label
-      - id: Operation Type
+      - id: labels
         type: LABEL
-      - id: Resource Type
-        type: LABEL
+      - id: value
+        type: number
   - uuid: health
     url: /api/health
     expression: >-
-     $.[$.name, $.state, $.details.[$.database.[$.state, $.message ? $.message : "-"], $.filesystem.[$.state, $.message ? $.message : "-"], $.infinispan.[$.state, $.message ? $.message : "-"], $.ldap ? $.ldap.[$.state, $.ldapStatus.[ $.[ $.*.[$.providerName ? $.providerName : "-", $.status, $.errorMessage, $.hint]]]] : "-"]]
+      $.[$.name, $.state, $.details.[$.database.[$.state, $.message ? $.message : "-"], $.filesystem.[$.state, $.message ? $.message : "-"], $.infinispan.[$.state, $.message ? $.message : "-"], $.ldap ? $.ldap.[$.state, $.ldapStatus.[ $.[ $.*.[$.providerName ? $.providerName : "-", $.status, $.errorMessage, $.hint]]]] : "-"]]
     columns:
       - id: Name
         type: LABEL
@@ -72,6 +67,371 @@ datasets:
       #  type: LABEL
       #, $.ldap.[ $.state,  $.ldapStatus.[ $.[ $.*.providerName, $.*.status, $.*.errorMessage, $.*.hint]]]
 pages:
+  - name: Monitor
+    properties:
+      margin-left: 10px
+    rows:
+      - columns:
+          - components:
+              - html: <h2>Overview</h2>
+      - columns:
+          - span: 2
+            components:
+              - settings:
+                  type: METRIC
+                  general:
+                    title: "CPU Usage"
+                  html:
+                    javascript: >-
+                      document.getElementById(${this}.id + "Icon").className = "pficon pficon-cpu";
+                      document.getElementById(${this}.id + "Suffix").innerHTML = "%";
+                  columns:
+                    - id: value
+                      expression: value * 100
+                  lookup:
+                    uuid: metrics
+                    filter:
+                      - column: metric
+                        function: EQUALS_TO
+                        args:
+                          - base_cpu_processCpuLoad_percent
+                    group:
+                      - groupFunctions:
+                          - source: value
+          - span: 2
+            components:
+              - settings:
+                  type: METRIC
+                  general:
+                    title: "Uptime"
+                  html:
+                    javascript: >-
+                      document.getElementById(${this}.id + "Icon").className = "fa fa-clock-o";
+                      document.getElementById(${this}.id + "Suffix").innerHTML = "min";
+                  columns:
+                    - id: value
+                      pattern: "#"
+                      expression: value / 60
+                  lookup:
+                    uuid: metrics
+                    filter:
+                      - column: Metric
+                        function: EQUALS_TO
+                        args:
+                          - "base_jvm_uptime_seconds"
+                    group:
+                      - functions:
+                          - source: value
+          - span: 2
+            components:
+              - settings:
+                  type: METRIC
+                  general:
+                    title: "Memory Usage"
+                  html:
+                    javascript: >-
+                      document.getElementById(${this}.id + "Suffix").innerHTML = "MB";
+                  columns:
+                    - id: value
+                      pattern: "#,000"
+                      expression: (value / 1024) / 1024
+                  lookup:
+                    uuid: metrics
+                    filter:
+                      - column: Metric
+                        function: EQUALS_TO
+                        args:
+                          - "vendor_memoryPool_usage_bytes"
+                    group:
+                      - functions:
+                          - source: value
+                            function: SUM
+          - span: 2
+            components:
+              - settings:
+                  type: METRIC
+                  general:
+                    title: "Free Swap Size"
+                  html:
+                    javascript: >-
+                      document.getElementById(${this}.id + "Suffix").innerHTML = "MB";
+                  columns:
+                    - id: value
+                      pattern: "#,000"
+                      expression: (value / 1024) / 1024
+                  lookup:
+                    uuid: metrics
+                    filter:
+                      - column: Metric
+                        function: EQUALS_TO
+                        args:
+                          - "vendor_memory_freeSwapSize_bytes"
+                    group:
+                      - functions:
+                          - source: value
+          - span: 2
+            components:
+              - settings:
+                  type: METRIC
+                  general:
+                    title: "Free Physical Size"
+                  html:
+                    javascript: >-
+                      document.getElementById(${this}.id + "Suffix").innerHTML = "MB";
+                  columns:
+                    - id: value
+                      pattern: "#,000"
+                      expression: (value / 1024) / 1024
+                  lookup:
+                    uuid: metrics
+                    filter:
+                      - column: Metric
+                        function: EQUALS_TO
+                        args:
+                          - "vendor_memory_freePhysicalSize_bytes"
+                    group:
+                      - functions:
+                          - source: value
+          - span: 2
+            components:
+              - settings:
+                  type: METRIC
+                  general:
+                    title: "GC total Time"
+                  html:
+                    javascript: >-
+                      document.getElementById(${this}.id + "Suffix").innerHTML = "sec";
+                  lookup:
+                    uuid: metrics
+                    filter:
+                      - column: Metric
+                        function: EQUALS_TO
+                        args:
+                          - "base_gc_time_total_seconds"
+                    group:
+                      - functions:
+                          - source: value
+                            function: SUM
+      - columns:
+          - components:
+              - html: <h2>JVM Stats</h2>
+      - columns:
+          - span: 6
+            components:
+              - settings:
+                  type: barchart
+                  general:
+                    title: Memory
+                  axis:
+                    x:
+                      labels_angle: 9
+                  columns:
+                    - id: labels
+                      expression: >-
+                        value.replaceAll("name=\"", "")
+                            .replaceAll("\"", "")
+                    - id: value
+                      pattern: "#"
+                  lookup:
+                    uuid: metrics
+                    filter:
+                      - column: metric
+                        function: EQUALS_TO
+                        args:
+                          - vendor_memoryPool_usage_bytes
+                    sort:
+                      - column: value
+                        order: descending
+                    group:
+                      - columnGroup:
+                          source: labels
+                        functions:
+                          - source: labels
+                          - source: value
+                            function: MAX
+          - span: 3
+            components:
+              - settings:
+                  type: barchart
+                  general:
+                    title: Classloader
+                  columns:
+                    - id: metric
+                      expression: >-
+                        value.replaceAll("_total", "")
+                            .replaceAll("base_", "")
+                            .replaceAll("_count", "")
+                            .replaceAll("classloader_", "")
+                    - id: value
+                      pattern: "#"
+                  lookup:
+                    uuid: metrics
+                    filter:
+                      - column: metric
+                        function: IN
+                        args:
+                          - base_classloader_unloadedClasses_total
+                          - base_classloader_loadedClasses_count
+                    sort:
+                      - column: value
+                        order: descending
+                    group:
+                      - columnGroup:
+                          source: metric
+                        functions:
+                          - source: metric
+                          - source: value
+                            function: MAX
+          - span: 3
+            components:
+              - settings:
+                  type: barchart
+                  general:
+                    title: Threads
+                  columns:
+                    - id: metric
+                      expression: >-
+                        value.replaceAll("base_", "")
+                             .replaceAll("thread_", "")
+                    - id: value
+                      pattern: "#"
+
+                  lookup:
+                    uuid: metrics
+                    filter:
+                      - column: metric
+                        function: IN
+                        args:
+                          - base_thread_count
+                          - base_thread_daemon_count
+                          - base_thread_max_count
+                    sort:
+                      - column: value
+                        order: descending
+                    group:
+                      - columnGroup:
+                          source: metric
+                        functions:
+                          - source: metric
+                          - source: value
+                            function: MAX
+      - columns:
+          - components:
+              - html: <h2>Database</h2>
+      - columns:
+          - span: 6
+            components:
+              - settings:
+                  type: barchart
+                  general:
+                    title: Connections
+                  axis:
+                    x:
+                      labels_angle: 9
+                  columns:
+                    - id: metric
+                      expression: >-
+                        value.replaceAll("vendor_agroal_", "")
+                            .replaceAll("_count", "")
+                            .replaceAll("_total", "")
+                    - id: value
+                      pattern: "#"
+                  lookup:
+                    uuid: metrics
+                    filter:
+                      - column: metric
+                        function: IN
+                        args:
+                          - vendor_agroal_acquire_count_total
+                          - vendor_agroal_active_count
+                          - vendor_agroal_available_count
+                          - vendor_agroal_awaiting_count
+                          - vendor_agroal_destroy_count_total
+                          - vendor_agroal_flush_count_total
+                          - vendor_agroal_invalid_count_total
+                          - vendor_agroal_leak_detection_count_total
+                          - vendor_agroal_max_used_count
+                          - vendor_agroal_reap_count_total
+                    sort:
+                      - column: value
+                        order: descending
+                    group:
+                      - columnGroup:
+                          source: metric
+                        functions:
+                          - source: metric
+                          - source: value
+                            function: MAX
+          - span: 3
+            components:
+              - settings:
+                  type: barchart
+                  general:
+                    title: Creation Time (seconds)
+                  columns:
+                    - id: metric
+                      expression: >-
+                        value.replaceAll("vendor_agroal_creation_time_", "")
+                             .replaceAll("_seconds", "")
+                  lookup:
+                    uuid: metrics
+                    filter:
+                      - column: metric
+                        function: IN
+                        args:
+                          - vendor_agroal_creation_time_average_seconds
+                          - vendor_agroal_creation_time_max_seconds
+                          - vendor_agroal_creation_time_total_seconds
+                    sort:
+                      - column: value
+                        order: descending
+                    group:
+                      - columnGroup:
+                          source: metric
+                        functions:
+                          - source: metric
+                          - source: value
+                            function: MAX
+          - span: 3
+            components:
+              - settings:
+                  type: barchart
+                  general:
+                    title: Blocking Time (seconds)
+                  columns:
+                    - id: metric
+                      expression: >-
+                        value.replaceAll("vendor_agroal_blocking_time_", "")
+                             .replaceAll("_seconds", "")
+
+                  lookup:
+                    uuid: metrics
+                    filter:
+                      - column: metric
+                        function: IN
+                        args:
+                          - vendor_agroal_blocking_time_average_seconds
+                          - vendor_agroal_blocking_time_total_seconds
+                          - vendor_agroal_blocking_time_max_seconds
+                    sort:
+                      - column: value
+                        order: descending
+
+                    group:
+                      - columnGroup:
+                          source: metric
+                        functions:
+                          - source: metric
+                          - source: value
+                            function: MAX
+      - columns:
+          - components:
+              - settings:
+                  component: table
+                  external:
+                    width: 100%
+                  lookup:
+                    uuid: metrics
   - name: index
     components:
       - type: TABS
@@ -84,247 +444,6 @@ pages:
         properties:
           divId: dashboards_div
 
-  - name: Admin Events
-    properties:
-      margin: 10px
-    rows:
-      - columns:
-          - components:
-              - html: >-
-                  <strong style="font-size: xx-large">Admin Events</strong>
-                  <hr />
-      - columns:
-          - span: 1
-            components:
-              - html: >-
-                  <strong>Select Operation Type</strong>
-              - properties:
-                  width: 140px
-                settings:
-                  selector:
-                    multiple: true
-                  type: selector
-                  filter:
-                    enabled: true
-                    notification: true
-                  lookup:
-                    uuid: admin_events
-                    group:
-                      - columnGroup:
-                          source: Operation Type
-                        functions:
-                          - source: Operation Type
-          - span: 1
-            components:
-              - html: >-
-                  <strong>Select Resource Type</strong>
-              - properties:
-                  width: 140px
-                  margin-bottom: 30px
-                settings:
-                  selector:
-                    multiple: true
-                  type: selector
-                  filter:
-                    enabled: true
-                    notification: true
-                  lookup:
-                    uuid: admin_events
-                    group:
-                      - columnGroup:
-                          source: Resource Type
-                        functions:
-                          - source: Resource Type
-
-      - columns:
-          - span: 6
-            components:
-              - settings:
-                  type: BARCHART
-                  filter:
-                    enabled: true
-                    listening: true
-                  general:
-                    title: Resource Type
-                  chart:
-                    resizable: true
-                    height: 400
-                    grid:
-                      x: false
-                  lookup:
-                    uuid: admin_events
-                    sort:
-                      - column: total
-                        order: descending
-                    group:
-                      - columnGroup:
-                          source: Resource Type
-                        functions:
-                          - source: Resource Type
-                          - source: Resource Type
-                            function: COUNT
-                            column: total
-          - span: 6
-            components:
-              - settings:
-                  type: BARCHART
-                  filter:
-                    enabled: true
-                    listening: true
-                  general:
-                    title: Operation Type
-                  chart:
-                    resizable: true
-                    height: 400
-                    grid:
-                      x: false
-                  lookup:
-                    uuid: admin_events
-                    sort:
-                      - column: total
-                        order: descending
-                    group:
-                      - columnGroup:
-                          source: Operation Type
-                        functions:
-                          - source: Operation Type
-                          - source: Operation Type
-                            function: COUNT
-                            column: total
-
-      - columns:
-          - components:
-              - html: >-
-                  <strong style="font-size: x-large">List of Admin Events</strong>
-                  <hr />
-              - settings:
-                  component: table
-                  external:
-                    width: 100%
-                  lookup:
-                    uuid: admin_events
-  - name: Login Events
-    properties:
-      margin: 10px
-    components:
-      - html: >-
-          <strong style="font-size: xx-large">Login Events</strong>
-          <hr />        
-          <strong>Select type</strong>
-      - settings:
-          selector:
-            multiple: true
-          type: selector
-          subtype: selector_labels
-          filter:
-            enabled: true
-            notification: true
-          lookup:
-            uuid: events
-            group:
-              - columnGroup:
-                  source: type
-                functions:
-                  - source: type
-      - settings:
-          type: barchart
-          axis:
-            x:
-              labels_angle: 6
-          filter:
-            enabled: true
-            listening: true
-          chart:
-            resizable: true
-            height: 400
-            grid:
-              x: false
-          columns:
-            - id: Total
-              pattern: "#"
-          lookup:
-            uuid: events
-            group:
-              - columnGroup:
-                  source: type
-                functions:
-                  - source: type
-                  - source: type
-                    function: COUNT
-                    column: Total
-      - settings:
-          component: table
-          external:
-            width: 100%
-          lookup:
-            uuid: events
-  - name: Sessions
-    properties:
-      margin: 10px
-    components:
-      - html: >-
-          <strong style="font-size: xx-large">Sessions</strong>
-          <hr />        
-          <strong>Select Client ID</strong>
-      - properties:
-          width: 140px
-        settings:
-          selector:
-            multiple: true
-          type: selector
-          filter:
-            enabled: true
-            notification: true
-          lookup:
-            uuid: sessions
-            group:
-              - columnGroup:
-                  source: Client ID
-                functions:
-                  - source: Client ID
-      - settings:
-          type: BARCHART
-          filter:
-            enabled: true
-            listening: true
-          general:
-            title: Sessions by Client
-          chart:
-            resizable: true
-            height: 400
-            legend:
-              show: true
-            grid:
-              x: false
-          lookup:
-            uuid: sessions
-            sort:
-              - column: active
-                order: descending
-            group:
-              - functions:
-                  - source: Client ID
-                  - source: Active
-                  - source: Offline
-      - html: >-
-          <strong style="font-size: x-large">List of sessions</strong>
-          <hr />
-      - settings:
-          component: table
-          external:
-            width: 100%
-          filter:
-            enabled: true
-            listening: true
-          lookup:
-            uuid: sessions
-  - name: Metrics
-    rows:
-      - columns:
-          - components:
-              - settings:
-                  lookup:
-                    uuid: all_metrics
   - name: Health
     properties:
       margin: 10px
@@ -343,16 +462,13 @@ pages:
                     enabled: true
                     listening: true
                   lookup:
-                    uuid: health              
+                    uuid: health
+
 navTree:
   root_items:
     - type: GROUP
       name: Keycloak Monitoring
-
       id: dashboards
       children:
-        - page: Admin Events
-        - page: Login Events
-        - page: Sessions
+        - page: Monitor
         - page: Health
-#        - page: Metrics

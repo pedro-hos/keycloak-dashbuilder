@@ -15,7 +15,7 @@ So, you can now build your own dashboard using Dashbuilder YAML and analyze your
 4. [Configuring Keycloak-dashbuilder project](#configuring-keycloak-dashbuilder-project)
 5. [Other Integrations](#other-integrations)
 6. [How to create other Dashboards?](#how-to-create-other-dashboards)
-7. 
+7. [Screens](#screens)
 
 ## Requirements
 - Java JDK 17

@@ -3,8 +3,6 @@
 
 This is a Quarkus project that connects to Keycloak REST API as a proxy and build Dashboards using the [Dashbuilder](https://www.dashbuilder.org/) project.
 
-![Keycloak-Dashbuilder Home](/img/home.png "Keycloak-Dashbuilder Home")
-
 So, you can now build your own dashboard using Dashbuilder YAML and analyze your data properly.
 
 # Table of Contents
@@ -12,9 +10,12 @@ So, you can now build your own dashboard using Dashbuilder YAML and analyze your
 1. [Requirements](#requirements)
 2. [Tested Versions](#tested-versions)
 3. [Install and Setup Keycloak](#install-and-setup-keycloak)
+    * [By importing REALM File](#by-importing-realm-file)
+    * [Using kcadm](#using-kcadm)
 4. [Configuring Keycloak-dashbuilder project](#configuring-keycloak-dashbuilder-project)
 5. [Other Integrations](#other-integrations)
 6. [How to create other Dashboards?](#how-to-create-other-dashboards)
+7. 
 
 ## Requirements
 - Java JDK 17
@@ -186,3 +187,27 @@ You can also, compile and install [keycloak-health-checks](https://github.com/th
 ## How to create other Dashboards?
 
 You need to edit the `src/main/resources/dashboards/monitor.dash.yaml` in order to add more dashboards. Learn how to create dashboards by following [Dashbuilder YAML guide](https://www.dashbuilder.org/docs/#chap-dashbuilder-yaml-guides).
+
+## Screens
+
+### Metrics
+
+![Metrics](/img/metrics.png "Metrics")
+
+### Health
+
+![Health](/img/health.png "Health")
+
+### Admin Events
+
+![Admin Events](/img/admin_events.png "Admin Events")
+
+### Login Events
+
+![Events](/img/login_events.png "Events")
+
+### Sessions
+
+![Sessions](/img/sessions.png "Sessions")
+
+

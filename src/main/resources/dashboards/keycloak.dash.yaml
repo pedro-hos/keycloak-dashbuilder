@@ -35,8 +35,8 @@ datasets:
       - id: Operation Type
         type: LABEL
       - id: Resource Type
-        type: LABEL 
-pages: 
+        type: LABEL
+pages:
   - name: index
     components:
       - type: TABS
@@ -175,7 +175,26 @@ pages:
       - html: >-
           <strong style="font-size: xx-large">Login Events</strong>
           <hr />        
-          <strong>Select type</strong>
+          <strong>Select User</strong>
+      - properties:
+          width: 160px
+          margin-bottom: 10px
+        settings:
+          selector:
+            multiple: true
+          type: selector
+          filter:
+            enabled: true
+            notification: true
+          lookup:
+            uuid: events
+            group:
+              - columnGroup:
+                  source: user
+                functions:
+                  - source: user
+
+      - html: <strong>Select Type</strong>
       - settings:
           selector:
             multiple: true
@@ -193,9 +212,6 @@ pages:
                   - source: type
       - settings:
           type: barchart
-          axis:
-            x:
-              labels_angle: 6
           filter:
             enabled: true
             listening: true
@@ -288,7 +304,7 @@ navTree:
     - type: GROUP
       name: Keycloak Monitoring
       id: dashboards
-      children:        
+      children:
         - page: Admin Events
         - page: Login Events
         - page: Sessions
